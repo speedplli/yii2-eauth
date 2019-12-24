@@ -11,7 +11,9 @@ namespace nodge\eauth;
 
 use Yii;
 use yii\base\BaseObject;
+use yii\base\UnknownPropertyException;
 use yii\helpers\Url;
+use yii\helpers\Json;
 use yii\helpers\ArrayHelper;
 use OAuth\Common\Http\Uri\Uri;
 use OAuth\Common\Http\Client\ClientInterface;
@@ -88,14 +90,16 @@ abstract class ServiceBase extends BaseObject implements IAuthService
      */
     private $_httpClient;
 
-	/**
-	 * PHP getter magic method.
-	 * This method is overridden so that service attributes can be accessed like properties.
-	 *
-	 * @param string $name property name.
-	 * @return mixed property value.
-	 * @see getAttribute
-	 */
+    /**
+     * PHP getter magic method.
+     * This method is overridden so that service attributes can be accessed like properties.
+     *
+     * @param string $name property name.
+     *
+     * @return mixed property value.
+     * @throws UnknownPropertyException
+     * @see getAttribute
+     */
 	public function __get($name)
 	{
 		if ($this->hasAttribute($name)) {
@@ -372,6 +376,7 @@ abstract class ServiceBase extends BaseObject implements IAuthService
 
     /**
      * @return ClientInterface
+     * @throws \yii\base\InvalidConfigException
      */
     protected function getHttpClient()
     {
@@ -475,7 +480,7 @@ abstract class ServiceBase extends BaseObject implements IAuthService
      */
     protected function parseResponse($response)
     {
-        return json_decode($response, true);
+        return Json::decode($response);
     }
 
     /**
